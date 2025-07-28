@@ -42,7 +42,7 @@ docker build --platform=linux/amd64 -t pdf-outline-extractor .
 2. **Run the container**:
 docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output/repoidentifier/:/app/output --network none <reponame.someidentifier>
 **Replace $(pwd) with your local path if using Windows**:
-docker run --rm -v D:/Adobe/input:/app/input -v D:/Adobe/output:/app/output --network none pdf-outline-extractor
+docker run --rm -v D:/Challenge_1a/sample_dataset/pdfs:/app/input:ro -v D:/Challenge_1a/sample_dataset/outputs:/app/output --network none pdf-outline-extractor
 
 
 
