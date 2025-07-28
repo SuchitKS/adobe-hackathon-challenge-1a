@@ -41,7 +41,7 @@ This repository contains a CPU-only, Dockerized Python solution for extracting s
          docker build --platform linux/amd64 -t <reponame.someidentifier> .
    
          
-         docker build --platform=linux/amd64 -t pdf-outline-extractor .
+         docker build --platform=linux/amd64 -t pdf-processor .
 
 3. **Run the container**:
 
