@@ -22,8 +22,17 @@ This repository contains a CPU-only, Dockerized Python solution for extracting s
 ├── input/ # Put your PDFs here before running
 ├── output/ # Outputs JSON files here after run
 
+## Approach
 
----
+- **Font-based heuristics**: Uses PyMuPDF to analyze font size, weight, and positioning.
+- **Rule-based structure**: Determines hierarchy levels (H1–H3) based on visual layout and regex patterns.
+- **Title detection**: Extracts the most prominent text block on the first page.
+- **Output format**: Follows the required schema structure (see `output_schema.json`).
+
+## Libraries Used
+
+- [`pymupdf`](https://pymupdf.readthedocs.io/) (for PDF parsing)
+- Python Standard Libraries (`json`, `os`, `pathlib`)
 
 ## How to Run (via Docker)
 
