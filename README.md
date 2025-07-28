@@ -1,9 +1,6 @@
 # Adobe Hackathon Challenge 1A 
 
 This repository contains a CPU-only, Dockerized Python solution for extracting structured outlines from PDFs. It identifies the document **title** and **headings (H1, H2, H3)** based on visual layout, font size, and other features.
-
----
-
 ## Features
 
 - Extracts:
@@ -31,10 +28,11 @@ This repository contains a CPU-only, Dockerized Python solution for extracting s
 ## How to Run (via Docker)
 
 1. **Build Docker Image**:
+docker build --platform linux/amd64 -t <reponame.someidentifier> .
 docker build --platform=linux/amd64 -t pdf-outline-extractor .
-2. **Run with PDF files**:
-docker run --rm -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output pdf-outline-extractor
+2. **Run the container**:
+docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output/repoidentifier/:/app/output --network none <reponame.someidentifier>
 **Replace $(pwd) with your local path if using Windows**:
-docker run --rm -v D:/Adobe/input:/app/input -v D:/Adobe/output:/app/output pdf-outline-extractor
+docker run --rm -v D:/Adobe/inputs:/app/input -v D:/Adobe/outputs:/app/output --network none pdf-outline-extractor
 
 
