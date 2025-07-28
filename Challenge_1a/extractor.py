@@ -75,10 +75,6 @@ def _profile_document_styles(doc):
     }
 
 def _extract_title(doc, style_profile):
-    """
-    Extracts the title from the first page (page 0) of the document.
-    Uses a more conservative approach to avoid garbled text extraction.
-    """
     try:
         if len(doc) == 0:
             return doc.metadata.get('title', 'Untitled')
@@ -186,7 +182,7 @@ def _extract_title(doc, style_profile):
             })
         
         if not title_candidates:
-            # Fallback: use the largest text in the top section
+            
             largest_lines = [line for line in text_lines if line['size'] == max_size]
             if largest_lines:
                 # Take the topmost largest text
@@ -196,42 +192,26 @@ def _extract_title(doc, style_profile):
         
         # Sort by score, then by position
         title_candidates.sort(key=lambda x: (-x['score'], x['y']))
-        
-        # Take the best candidate
         best_title = title_candidates[0]['text']
-        
-        # Enhanced multi-line title detection
         title_parts = [best_title]
         best_y = title_candidates[0]['y']
         best_size = title_candidates[0]['size']
-        
-        # Look for consecutive lines that could be part of the same title
         remaining_candidates = title_candidates[1:]
         for candidate in remaining_candidates:
             y_diff = abs(candidate['y'] - best_y)
             size_diff = abs(candidate['size'] - best_size)
             
             # More flexible criteria for multi-line titles
-            if (y_diff < best_size * 3 and  # Allow more spacing
-                size_diff < 4 and  # Allow more size variation
-                candidate['score'] >= 3):  # Minimum score
-                
-                # Check if this line logically continues the title
+            if (y_diff < best_size * 3 and  size_diff < 4 and  candidate['score'] >= 3): 
                 combined_text = ' '.join(title_parts + [candidate['text']])
-                
-                # Avoid adding if it creates repetitive or nonsensical text
                 if not _is_repetitive_text(combined_text):
                     title_parts.append(candidate['text'])
-                    best_y = candidate['y']  # Update for next comparison
+                    best_y = candidate['y']  
                 else:
                     break
             else:
                 break
-        
-        # Join and clean title parts
         final_title = ' '.join(title_parts).strip()
-        
-        # Clean up repetitive patterns and excessive whitespace
         final_title = _clean_repetitive_title(final_title)
         final_title = re.sub(r'\s+', ' ', final_title)
         
@@ -242,18 +222,13 @@ def _extract_title(doc, style_profile):
         return doc.metadata.get('title', 'Untitled')
 
 def _is_repetitive_text(text):
-    """Check if text contains repetitive patterns that suggest extraction errors"""
     words = text.lower().split()
     if len(words) < 3:
         return False
-        
-    # Check for repeated words or phrases
     word_counts = {}
     for word in words:
-        if len(word) > 2:  # Only check meaningful words
+        if len(word) > 2: 
             word_counts[word] = word_counts.get(word, 0) + 1
-    
-    # If any word appears more than 3 times, likely repetitive
     for count in word_counts.values():
         if count > 3:
             return True
@@ -261,16 +236,12 @@ def _is_repetitive_text(text):
     return False
 
 def _clean_repetitive_title(title):
-    """Clean repetitive patterns from title text"""
-    # Remove obvious repetitive patterns
     words = title.split()
     cleaned_words = []
     
     for i, word in enumerate(words):
-        # Skip if this word was just added
         if i > 0 and word.lower() == words[i-1].lower():
             continue
-        # Skip if this creates a 3-word repetitive pattern
         if (i > 1 and 
             word.lower() == words[i-2].lower() and 
             len(cleaned_words) > 1 and 
@@ -327,7 +298,7 @@ def _extract_headings(doc, style_profile, title):
                 word_count = len(text.split())
                 
                 # Skip very long text (likely paragraphs, not headings)
-                if word_count > 15:  # More restrictive for headings
+                if word_count > 15:  
                     continue
                 
                 # Skip text ending with sentence punctuation (likely body text)
@@ -464,7 +435,7 @@ def _extract_headings(doc, style_profile, title):
                         "text": text,
                         "size": span['size'],
                         "font": span['font'],
-                        "page": page_num,  # Use actual page number (page_num is already 1-based since we start from 1)
+                        "page": page_num, 
                         "y": line['bbox'][1],
                         "score": score,
                         "is_numbered": is_numbered,
@@ -505,9 +476,7 @@ def _extract_headings(doc, style_profile, title):
     
     outline = []
     
-    # Enhanced processing with improved hierarchy detection
-    
-    # 1. Process special headings first (chapters, appendices)
+    # Process special headings first (chapters, appendices)
     special_headings = [h for h in heading_candidates if h['is_chapter'] or h['is_appendix']]
     special_headings.sort(key=lambda x: (x['page'], x['y']))
     for h in special_headings:
@@ -518,7 +487,7 @@ def _extract_headings(doc, style_profile, title):
             "page": h['page']
         })
     
-    # 2. Process numbered headings with enhanced hierarchy detection
+    # Process numbered headings with enhanced hierarchy detection
     numbered_headings = [h for h in heading_candidates if h['is_numbered'] and not h['is_chapter'] and not h['is_appendix']]
     numbered_headings.sort(key=lambda x: (x['page'], x['y']))
     for h in numbered_headings:
@@ -544,8 +513,6 @@ def _extract_headings(doc, style_profile, title):
             "text": text,
             "page": h['page']
         })
-    
-    # 3. Process unnumbered headings using enhanced font size hierarchy
     unnumbered_headings = [h for h in heading_candidates 
                           if not h['is_numbered'] and not h['is_appendix'] and not h['is_chapter']]
     
