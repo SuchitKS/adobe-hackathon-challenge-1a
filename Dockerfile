@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir pymupdf==1.23.14
 
 COPY . .
 
-CMD ["python", "process_titles.py"]
+CMD ["python", "process_pdfs.py"]
