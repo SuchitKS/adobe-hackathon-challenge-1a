@@ -49,7 +49,7 @@ This repository contains a CPU-only, Dockerized Python solution for extracting s
 
    **Replace $(pwd) with your local path if using Windows**:  
     
-       docker run --rm -v D:/Challenge_1a/sample_dataset/pdfs:/app/input:ro -v D:/Challenge_1a/sample_dataset/outputs:/app/output --network none pdf-outline-extractor
+       docker run --rm -v D:/Challenge_1a/sample_dataset/pdfs:/app/input:ro -v D:/Challenge_1a/sample_dataset/outputs:/app/output --network none pdf-processor
 
 
 
